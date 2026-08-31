@@ -13,35 +13,27 @@ The [OpenAPI Overlay Specification](https://spec.openapis.org/overlay/latest.htm
 | `amazon-managed.overlay.yaml` | Amazon OpenSearch Service | Operations excluded from managed AOS domains |
 | `amazon-serverless.overlay.yaml` | Amazon OpenSearch Serverless | Operations excluded from AOSS collections |
 
+## CI Validation
+
+The `validate-overlays` workflow runs on every pull request. It:
+
+1. Merges the spec (`npm run merge`)
+2. Applies each overlay using [openapi-overlays-js](https://github.com/lornajane/openapi-overlays-js)
+3. Validates each filtered spec is a valid OpenAPI document
+
+This catches overlay targets that reference renamed or removed paths.
+
 ## Usage
 
-### Producing a distribution-filtered spec
+### Producing a distribution-filtered spec locally
 
 ```bash
-# Generate the merged spec first
 npm run merge
 
-# Apply an overlay to produce a filtered spec
-npm run overlay:apply -- \
-  --spec build/opensearch-openapi.yaml \
+npx overlayjs \
+  --openapi build/opensearch-openapi.yaml \
   --overlay overlays/amazon-managed.overlay.yaml \
-  --output build/opensearch-openapi-amazon-managed.yaml
-```
-
-### Regenerating overlays from spec annotations
-
-If `x-distributions-excluded` annotations change in the source spec:
-
-```bash
-npm run overlay:generate -- --source ./spec --output ./overlays
-```
-
-### Validating overlays match the extractor
-
-This proves that applying an overlay produces the same result as the existing `OpenApiVersionExtractor` distribution filtering:
-
-```bash
-npm run overlay:validate -- --source ./spec --overlays ./overlays
+  > build/opensearch-openapi-amazon-managed.yaml
 ```
 
 ## Adding Your Distribution's Overlay
@@ -53,8 +45,7 @@ If you maintain an OpenSearch distribution with a different API surface:
 3. List the operations to remove using JSONPath targets:
    - `$.paths['/<path>']` removes an entire path (all methods)
    - `$.paths['/<path>'].<method>` removes a single method
-4. Run `npm run overlay:validate` to confirm consistency
-5. Submit a pull request
+4. Submit a pull request — CI will validate the overlay automatically
 
 ## Overlay Format
 
