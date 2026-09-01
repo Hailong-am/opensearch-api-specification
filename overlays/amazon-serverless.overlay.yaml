@@ -159,3 +159,7 @@ actions:
     remove: true
   - target: $.paths['/{index}/_segments']
     remove: true
+  - target: $.paths['/_cluster/health']
+    remove: true
+  - target: $.paths['/_cluster/health/{index}']
+    remove: true
