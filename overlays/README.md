@@ -18,7 +18,7 @@ The [OpenAPI Overlay Specification](https://spec.openapis.org/overlay/latest.htm
 The `validate-overlays` workflow runs on every pull request. It:
 
 1. Merges the spec (`npm run merge`)
-2. Applies each overlay using [openapi-overlays-js](https://github.com/lornajane/openapi-overlays-js)
+2. Applies each overlay using the [speakeasy overlay CLI](https://github.com/speakeasy-api/speakeasy)
 3. Validates each filtered spec is a valid OpenAPI document
 
 This catches overlay targets that reference renamed or removed paths.
@@ -30,11 +30,14 @@ This catches overlay targets that reference renamed or removed paths.
 ```bash
 npm run merge
 
-npx overlayjs \
-  --openapi build/opensearch-openapi.yaml \
+speakeasy overlay apply \
+  --schema build/opensearch-openapi.yaml \
   --overlay overlays/amazon-managed.overlay.yaml \
   > build/opensearch-openapi-amazon-managed.yaml
 ```
+
+Install the speakeasy CLI (prebuilt binary, no Go required):
+`curl -fsSL https://raw.githubusercontent.com/speakeasy-api/speakeasy/main/install.sh | sh`
 
 ## Adding Your Distribution's Overlay
 

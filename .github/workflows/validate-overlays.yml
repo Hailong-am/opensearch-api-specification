@@ -26,13 +26,19 @@ jobs:
       - name: Merge Spec
         run: npm run merge
 
+      - name: Install speakeasy overlay CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/speakeasy-api/speakeasy/main/install.sh \
+            | INSTALL_DIR="$HOME/.local/bin" sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Apply Overlays
         run: |
           for overlay in overlays/*.overlay.yaml; do
             name=$(basename "$overlay" .overlay.yaml)
             echo "Applying overlay: $name"
-            npx overlayjs \
-              --openapi build/opensearch-openapi.yaml \
+            speakeasy overlay apply \
+              --schema build/opensearch-openapi.yaml \
               --overlay "$overlay" \
               > "build/opensearch-openapi-${name}.yaml"
             echo "  -> build/opensearch-openapi-${name}.yaml"
