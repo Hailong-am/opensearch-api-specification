@@ -36,8 +36,10 @@ speakeasy overlay apply \
   > build/opensearch-openapi-amazon-managed.yaml
 ```
 
-Install the speakeasy CLI (prebuilt binary, no Go required):
-`curl -fsSL https://raw.githubusercontent.com/speakeasy-api/speakeasy/main/install.sh | sh`
+Install the speakeasy CLI (prebuilt binary, no Go required) from
+https://github.com/speakeasy-api/speakeasy/releases — download the archive for
+your platform and put the `speakeasy` binary on your `PATH`. CI pins a specific
+release (see `.github/workflows/validate-overlays.yml`).
 
 ## Adding Your Distribution's Overlay
 
