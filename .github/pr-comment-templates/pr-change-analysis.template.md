@@ -21,3 +21,10 @@ The full API changes report is available at: {{.api_changes_report_url}}
 |       Unknown | {{.before.specified_but_not_provided}}              | {{.after.specified_but_not_provided}}             | {{.specified_but_not_provided_delta}}             |
 
 {{end}}
+{{with .api_uncovered}}
+<details>
+<summary>Uncovered endpoints (provided by the cluster, missing from the spec)</summary>
+
+{{.}}
+</details>
+{{end}}

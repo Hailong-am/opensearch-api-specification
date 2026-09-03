@@ -188,12 +188,24 @@ jobs:
       - name: Construct Comment Data Payload
         shell: bash -eo pipefail {0}
         run: |
+          # Render the uncovered endpoints (the gap) from the AFTER coverage data
+          # into a checklist the comment template embeds. Uncovered = provided by
+          # the cluster but absent from the spec.
+          jq -r '
+            .endpoints.uncovered
+            | to_entries
+            | map((.value[] | ascii_upcase) + " " + .key)
+            | sort[]
+            | "- [ ] \(.)"
+          ' $AFTER_COVERAGE > ./api-uncovered.md
+
           jq \
             --arg pr_number ${PR_NUMBER} \
             --arg before_sha ${BEFORE_SHA} \
             --arg after_sha ${AFTER_SHA} \
             --arg api_changes_report_url "${API_CHANGES_REPORT_URL}" \
             --rawfile api_changes_summary ./changes-summary.md \
+            --rawfile api_uncovered ./api-uncovered.md \
             --slurpfile api_coverage $COVERAGE_DIFF \
             --null-input '
             {
@@ -205,7 +217,8 @@ jobs:
                 "after_sha": ($after_sha),
                 "api_changes_report_url": ($api_changes_report_url),
                 "api_changes_summary": ($api_changes_summary),
-                "api_coverage": ($api_coverage[0])
+                "api_coverage": ($api_coverage[0]),
+                "api_uncovered": ($api_uncovered)
               }
             }
             ' | tee pr-comment.json

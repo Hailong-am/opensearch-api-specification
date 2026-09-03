@@ -94,6 +94,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix `AggregationContainer`  for all bucket aggregations so that `aggs`/`aggregations` are siblings of the aggregation type([#1069](https://github.com/opensearch-project/opensearch-api-specification/pull/1069))
 
 ### Changed
+- Add the API coverage gap (the uncovered-endpoint checklist) to the per-PR Changes Analysis comment, so the missing-API list is visible directly on the PR without opening the workflow run ([#1227](https://github.com/opensearch-project/opensearch-api-specification/pull/1227))
 - Add explicit `style: simple` to 13 path parameters whose schema is an array (or `oneOf` with an array branch) so code generators no longer have to infer the OpenAPI 3 default ([#1134](https://github.com/opensearch-project/opensearch-api-specification/pull/1134))
 - Replace inline `format` query response parameter schemas across cat, list, sql, and ppl operations with typed enums (`CatResponseFormat`, `ListResponseFormat`, `SQLResponseFormat`, `PPLResponseFormat`) in `_common`, including server-truthful `default` values ([#1133](https://github.com/opensearch-project/opensearch-api-specification/pull/1133))
 - Changed schema of `NodeInfoSearchPipelines`'s `response_processors` & `request_processors` to use `NodeInfoSearchPipelineProcessor` instead of `NodeInfoIngestProcessor` ([#922](https://github.com/opensearch-project/opensearch-api-specification/pull/922))
