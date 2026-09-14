@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenSearch API — </title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            --os-navy: #003b5c;
+            --os-teal: #0a7b8f;
+            --os-blue: #005eb8;
+            --os-orange: #ef6c00;
+            --os-light-bg: #f5f7fa;
+            --sidebar-width: 300px;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        .os-layout { display: flex; height: 100vh; flex-direction: column; }
+
+        /* Header */
+        .os-header {
+            background: var(--os-navy); color: #fff; padding: 8px 20px;
+            display: flex; align-items: center; gap: 12px; height: 46px; flex-shrink: 0;
+        }
+        .os-header svg { height: 24px; width: 24px; }
+        .os-header h1 { margin: 0; font-size: 15px; font-weight: 500; }
+        .os-header .dist-badge {
+            padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 600;
+        }
+        .os-header .dist-badge.oss { background: #4caf50; }
+        .os-header .dist-badge.aos { background: var(--os-teal); }
+        .os-header .dist-badge.aoss { background: var(--os-orange); }
+        .os-header .back-link {
+            margin-left: auto; color: rgba(255,255,255,0.7); font-size: 12px;
+            text-decoration: none;
+        }
+        .os-header .back-link:hover { color: #fff; }
+        .os-header .stats { font-size: 11px; color: rgba(255,255,255,0.6); margin-left: 12px; }
+
+        .os-body { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar */
+        .os-sidebar {
+            width: var(--sidebar-width); min-width: var(--sidebar-width);
+            background: #fff; border-right: 1px solid #e0e0e0;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .search-box {
+            margin: 8px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;
+            font-size: 13px; outline: none;
+        }
+        .search-box:focus { border-color: var(--os-teal); }
+
+        .filter-bar {
+            display: flex; gap: 4px; padding: 0 8px 6px; flex-wrap: wrap;
+        }
+        .filter-btn {
+            font-size: 10px; padding: 2px 8px; border-radius: 10px; border: 1px solid #ddd;
+            background: #fff; cursor: pointer; color: #666;
+        }
+        .filter-btn.active { background: var(--os-teal); color: #fff; border-color: var(--os-teal); }
+        .filter-btn.blocked-filter.active { background: #c62828; border-color: #c62828; }
+
+        .nav-list { overflow-y: auto; flex: 1; padding: 0 0 12px; }
+        .tag-group { margin-bottom: 2px; }
+        .tag-header {
+            padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--os-navy);
+            cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none;
+        }
+        .tag-header:hover { background: var(--os-light-bg); }
+        .tag-header .arrow { font-size: 10px; transition: transform 0.15s; display: inline-block; }
+        .tag-header .arrow.open { transform: rotate(90deg); }
+        .tag-header .count { margin-left: auto; font-size: 10px; color: #999; font-weight: 400; }
+        .tag-header .blocked-count { color: #c62828; margin-left: 4px; }
+
+        .op-item {
+            padding: 3px 12px 3px 26px; font-size: 11px; color: #555; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis;
+        }
+        .op-item:hover { background: var(--os-light-bg); color: var(--os-navy); }
+        .op-item.blocked { opacity: 0.45; text-decoration: line-through; }
+        .op-item.blocked:hover { opacity: 0.7; }
+        .op-item .dist-icon { font-size: 9px; flex-shrink: 0; }
+
+        .method {
+            font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 2px;
+            min-width: 28px; text-align: center; text-transform: uppercase; flex-shrink: 0;
+        }
+        .method.get { background: rgba(10,123,143,0.12); color: var(--os-teal); }
+        .method.post { background: rgba(0,94,184,0.12); color: var(--os-blue); }
+        .method.put { background: rgba(239,108,0,0.12); color: var(--os-orange); }
+        .method.delete { background: rgba(198,40,40,0.12); color: #c62828; }
+        .method.head { background: rgba(0,0,0,0.06); color: #666; }
+        .method.patch { background: rgba(156,39,176,0.12); color: #7b1fa2; }
+
+        /* Main */
+        .os-main { flex: 1; overflow-y: auto; }
+        .swagger-ui .topbar { display: none; }
+        .swagger-ui .wrapper { max-width: none; padding: 0 20px; }
+        .swagger-ui .info .title { color: var(--os-navy); }
+        .swagger-ui .opblock.opblock-get .opblock-summary-method { background: var(--os-teal); }
+        .swagger-ui .opblock.opblock-get { border-color: var(--os-teal); background: rgba(10,123,143,0.03); }
+        .swagger-ui .opblock.opblock-post .opblock-summary-method { background: var(--os-blue); }
+        .swagger-ui .opblock.opblock-post { border-color: var(--os-blue); background: rgba(0,94,184,0.03); }
+        .swagger-ui .opblock.opblock-put .opblock-summary-method { background: var(--os-orange); }
+        .swagger-ui .opblock.opblock-put { border-color: var(--os-orange); background: rgba(239,108,0,0.03); }
+        .swagger-ui .opblock.opblock-delete .opblock-summary-method { background: #c62828; }
+        .swagger-ui .opblock.opblock-delete { border-color: #c62828; background: rgba(198,40,40,0.03); }
+        .swagger-ui section.models { display: none; }
+
+        /* Blocked operations in Swagger UI main area */
+        .swagger-ui .opblock.blocked-op { opacity: 0.4; position: relative; }
+        .swagger-ui .opblock.blocked-op::after {
+            content: 'BLOCKED'; position: absolute; right: 12px; top: 10px;
+            background: #c62828; color: #fff; padding: 2px 8px; border-radius: 3px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+        }
+        /* AOS-only badge */
+        .swagger-ui .opblock.aos-only-op::after {
+            content: 'AOS ONLY'; position: absolute; right: 12px; top: 10px;
+            background: var(--os-teal); color: #fff; padding: 2px 8px; border-radius: 3px;
+            font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+        }
+
+        /* Loading */
+        .loading {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; font-size: 15px; color: var(--os-navy);
+        }
+        .loading::after {
+            content: ''; width: 20px; height: 20px; margin-left: 10px;
+            border: 3px solid #e0e0e0; border-top-color: var(--os-teal);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="app"><div class="loading">Loading spec...</div></div>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script type="text/babel" data-type="module">
+    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+    // Determine distribution from filename or query param
+    const DIST = (() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('dist')) return params.get('dist');
+        const path = window.location.pathname;
+        if (path.includes('aoss')) return 'aoss';
+        if (path.includes('aos')) return 'aos';
+        return 'oss';
+    })();
+
+    const DIST_CONFIG = {
+        oss:  { label: 'OpenSearch (OSS)', badge: 'oss',  specFile: 'build/opensearch-openapi.json' },
+        aos:  { label: 'Amazon OpenSearch Service', badge: 'aos',  specFile: 'build/opensearch-openapi.json' },
+        aoss: { label: 'Amazon OpenSearch Serverless', badge: 'aoss', specFile: 'build/opensearch-openapi-aoss.json' },
+    };
+
+    const config = DIST_CONFIG[DIST] || DIST_CONFIG.oss;
+    document.title = `OpenSearch API — ${config.label}`;
+
+    // Parse operations from spec with distribution metadata
+    function parseOperations(spec) {
+        const ops = [];
+        for (const [path, methods] of Object.entries(spec.paths || {})) {
+            for (const [method, op] of Object.entries(methods)) {
+                if (typeof op !== 'object' || !op.operationId) continue;
+                const excluded = op['x-distributions-excluded'] || [];
+                const isBlockedOnAoss = excluded.includes('amazon-serverless');
+                const isBlockedOnAos = excluded.includes('amazon-managed');
+                const distOnly = op['x-distributions'] || [];
+                const isAosOnly = distOnly.includes('amazon-managed') && !distOnly.includes('amazon-serverless');
+
+                const group = op['x-operation-group'] || op.operationId || '';
+                const lastSeg = group.includes('.') ? group.split('.').pop() : group;
+                const label = lastSeg.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
+                const tags = op.tags || ['other'];
+
+                let blocked = false;
+                if (DIST === 'aoss' && isBlockedOnAoss) blocked = true;
+                if (DIST === 'aos' && isBlockedOnAos) blocked = true;
+
+                ops.push({ method, path, label, operationId: op.operationId, tags, blocked, isAosOnly, group });
+            }
+        }
+        return ops;
+    }
+
+    function Sidebar({ operations, onOperationClick }) {
+        const [search, setSearch] = useState('');
+        const [openTags, setOpenTags] = useState({});
+        const [showBlocked, setShowBlocked] = useState(true);
+        const [methodFilter, setMethodFilter] = useState(null);
+
+        const tagMap = useMemo(() => {
+            const map = {};
+            for (const op of operations) {
+                for (const tag of op.tags) {
+                    if (!map[tag]) map[tag] = [];
+                    map[tag].push(op);
+                }
+            }
+            return map;
+        }, [operations]);
+
+        const filtered = useMemo(() => {
+            const q = search.toLowerCase();
+            const result = {};
+            for (const [tag, ops] of Object.entries(tagMap)) {
+                const matched = ops.filter(op => {
+                    if (!showBlocked && op.blocked) return false;
+                    if (methodFilter && op.method !== methodFilter) return false;
+                    if (!q) return true;
+                    return op.label.toLowerCase().includes(q) ||
+                           op.path.toLowerCase().includes(q) ||
+                           op.group.toLowerCase().includes(q) ||
+                           tag.toLowerCase().includes(q);
+                });
+                if (matched.length > 0) result[tag] = matched;
+            }
+            return result;
+        }, [tagMap, search, showBlocked, methodFilter]);
+
+        const totalOps = operations.length;
+        const blockedOps = operations.filter(o => o.blocked).length;
+        const visibleOps = Object.values(filtered).flat().length;
+
+        return (
+            <nav className="os-sidebar">
+                <input className="search-box" placeholder="Filter operations..." value={search}
+                       onChange={e => setSearch(e.target.value)} />
+                <div className="filter-bar">
+                    {DIST !== 'oss' && blockedOps > 0 && (
+                        <button className={`filter-btn blocked-filter ${showBlocked ? 'active' : ''}`}
+                                onClick={() => setShowBlocked(!showBlocked)}>
+                            {showBlocked ? `Showing ${blockedOps} blocked` : `${blockedOps} blocked hidden`}
+                        </button>
+                    )}
+                    {['get','post','put','delete','head','patch'].map(m => (
+                        <button key={m} className={`filter-btn ${methodFilter === m ? 'active' : ''}`}
+                                onClick={() => setMethodFilter(methodFilter === m ? null : m)}>
+                            {m.toUpperCase()}
+                        </button>
+                    ))}
+                </div>
+                <div style={{padding:'0 12px 4px',fontSize:'10px',color:'#999'}}>
+                    {visibleOps} of {totalOps} operations
+                </div>
+                <div className="nav-list">
+                    {Object.entries(filtered).sort(([a],[b]) => a.localeCompare(b)).map(([tag, ops]) => {
+                        const tagBlocked = ops.filter(o => o.blocked).length;
+                        return (
+                            <div className="tag-group" key={tag}>
+                                <div className="tag-header" onClick={() => setOpenTags(prev => ({...prev, [tag]: !prev[tag]}))}>
+                                    <span className={`arrow ${openTags[tag] || search ? 'open' : ''}`}>&#9654;</span>
+                                    {tag}
+                                    <span className="count">{ops.length}</span>
+                                    {tagBlocked > 0 && <span className="blocked-count">({tagBlocked} blocked)</span>}
+                                </div>
+                                {(openTags[tag] || search) && ops.map((op, i) => (
+                                    <div className={`op-item ${op.blocked ? 'blocked' : ''}`} key={i}
+                                         onClick={() => onOperationClick(tag, op)}
+                                         title={`${op.method.toUpperCase()} ${op.path}${op.blocked ? ' [BLOCKED]' : ''}`}>
+                                        <span className={`method ${op.method}`}>{op.method}</span>
+                                        <span>{op.label}</span>
+                                        {op.blocked && <span className="dist-icon" title="Blocked">&#x1F6AB;</span>}
+                                        {op.isAosOnly && DIST === 'aos' && <span className="dist-icon" title="AOS only">&#x2601;</span>}
+                                    </div>
+                                ))}
+                            </div>
+                        );
+                    })}
+                </div>
+            </nav>
+        );
+    }
+
+    function App() {
+        const [spec, setSpec] = useState(null);
+        const [operations, setOperations] = useState([]);
+        const uiRef = useRef(null);
+
+        useEffect(() => {
+            fetch(config.specFile)
+                .then(r => r.json())
+                .then(data => {
+                    setSpec(data);
+                    setOperations(parseOperations(data));
+
+                    uiRef.current = SwaggerUIBundle({
+                        spec: data,
+                        dom_id: "#swagger-container",
+                        deepLinking: true,
+                        presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+                        plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+                        defaultModelsExpandDepth: -1,
+                        docExpansion: "none",
+                        filter: false,
+                    });
+
+                    // After Swagger UI renders, mark blocked operations
+                    if (DIST !== 'oss') {
+                        setTimeout(() => markBlockedInSwagger(data), 1500);
+                    }
+                });
+        }, []);
+
+        const markBlockedInSwagger = useCallback((data) => {
+            const opblocks = document.querySelectorAll('.opblock');
+            opblocks.forEach(el => {
+                const summary = el.querySelector('.opblock-summary-path span, .opblock-summary-path a');
+                if (!summary) return;
+                const pathText = summary.textContent.trim();
+
+                // Find matching operation
+                for (const [path, methods] of Object.entries(data.paths || {})) {
+                    for (const [method, op] of Object.entries(methods)) {
+                        if (typeof op !== 'object') continue;
+                        const excluded = op['x-distributions-excluded'] || [];
+                        const isBlocked = (DIST === 'aoss' && excluded.includes('amazon-serverless')) ||
+                                          (DIST === 'aos' && excluded.includes('amazon-managed'));
+                        if (isBlocked && el.classList.contains(`opblock-${method}`) && pathText.includes(path.replace(/{/g,'{'))) {
+                            el.classList.add('blocked-op');
+                        }
+                    }
+                }
+            });
+        }, []);
+
+        const handleOperationClick = useCallback((tag, op) => {
+            const tagEl = document.getElementById(`operations-tag-${tag}`);
+            if (tagEl) {
+                const isCollapsed = !tagEl.nextElementSibling || tagEl.nextElementSibling.style.height === '0px';
+                if (isCollapsed) tagEl.click();
+                setTimeout(() => {
+                    const opEl = document.getElementById(`operations-${tag}-${op.operationId}`);
+                    if (opEl) {
+                        opEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        const summary = opEl.querySelector('.opblock-summary');
+                        if (summary && !opEl.classList.contains('is-open')) summary.click();
+                    } else if (tagEl) {
+                        tagEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 200);
+            }
+        }, []);
+
+        const blockedCount = operations.filter(o => o.blocked).length;
+        const availableCount = operations.length - blockedCount;
+
+        return (
+            <div className="os-layout">
+                <header className="os-header">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="45" cy="45" r="35" fill="none" stroke="#0a7b8f" strokeWidth="8"/>
+                        <circle cx="45" cy="45" r="14" fill="#0a7b8f"/>
+                        <line x1="70" y1="70" x2="92" y2="92" stroke="#ef6c00" strokeWidth="10" strokeLinecap="round"/>
+                    </svg>
+                    <h1>OpenSearch API Reference</h1>
+                    <span className={`dist-badge ${config.badge}`}>{config.label}</span>
+                    <span className="stats">
+                        {availableCount} available{blockedCount > 0 && ` · ${blockedCount} blocked`}
+                    </span>
+                    <a className="back-link" href="index-landing.html">&#x2190; Change distribution</a>
+                </header>
+                <div className="os-body">
+                    <Sidebar operations={operations} onOperationClick={handleOperationClick} />
+                    <main className="os-main">
+                        <div id="swagger-container"></div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+    </script>
+</body>
+</html>

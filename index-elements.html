@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenSearch API Specification</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/@stoplight/elements/styles.min.css">
+    <style>
+        body { margin: 0; padding: 0; height: 100vh; overflow: hidden; }
+        .loading {
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; font-family: -apple-system, sans-serif;
+            color: #003b5c; font-size: 16px;
+        }
+        .loading::after {
+            content: ''; width: 24px; height: 24px; margin-left: 12px;
+            border: 3px solid #e0e0e0; border-top-color: #0a7b8f;
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loader">Loading OpenSearch API Specification</div>
+    <elements-api
+        id="api-docs"
+        router="hash"
+        layout="sidebar"
+        hideTryIt="true"
+        hideSchemas="true"
+        hideExport="true"
+        logo="https://opensearch.org/assets/brand/SVG/Mark/opensearch_mark_default.svg"
+        style="display:none; height:100vh;"
+    />
+    <script src="https://unpkg.com/@stoplight/elements/web-components.min.js"></script>
+    <script>
+    (async function() {
+        const resp = await fetch("build/opensearch-openapi.json");
+        const spec = await resp.json();
+
+        // Transform: add human-readable summary to every operation missing one
+        for (const [path, methods] of Object.entries(spec.paths || {})) {
+            for (const [method, op] of Object.entries(methods)) {
+                if (typeof op !== 'object' || op.summary) continue;
+
+                const group = op['x-operation-group'] || op.operationId || '';
+                if (!group) continue;
+
+                // "indices.create" -> "Create"
+                // "bulk_stream" -> "Bulk stream"
+                // "cluster.health" -> "Health"
+                const lastSegment = group.includes('.')
+                    ? group.split('.').slice(-1)[0]
+                    : group;
+
+                const clean = lastSegment.replace(/\.\d+$/, '');
+                const summary = clean
+                    .replace(/_/g, ' ')
+                    .replace(/^\w/, c => c.toUpperCase());
+
+                op.summary = summary;
+            }
+        }
+
+        const el = document.getElementById('api-docs');
+        el.apiDescriptionDocument = JSON.stringify(spec);
+        el.style.display = '';
+        document.getElementById('loader').remove();
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenSearch API Specification</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            --os-navy: #003b5c;
+            --os-teal: #0a7b8f;
+            --os-blue: #005eb8;
+            --os-orange: #ef6c00;
+            --os-light-bg: #f5f7fa;
+            --sidebar-width: 280px;
+        }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        /* Layout */
+        .os-layout { display: flex; height: 100vh; flex-direction: column; }
+        .os-header {
+            background: var(--os-navy); color: #fff; padding: 10px 20px;
+            display: flex; align-items: center; gap: 12px; height: 50px; flex-shrink: 0;
+        }
+        .os-header svg { height: 26px; width: 26px; }
+        .os-header h1 { margin: 0; font-size: 16px; font-weight: 500; }
+        .os-header .badge { background: var(--os-teal); padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+
+        .os-body { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sidebar */
+        .os-sidebar {
+            width: var(--sidebar-width); min-width: var(--sidebar-width);
+            background: #fff; border-right: 1px solid #e0e0e0;
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .os-sidebar .search-box {
+            margin: 10px; padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;
+            font-size: 13px; outline: none;
+        }
+        .os-sidebar .search-box:focus { border-color: var(--os-teal); }
+        .os-sidebar .nav-list { overflow-y: auto; flex: 1; padding: 0 0 12px; }
+        .os-sidebar .tag-group { margin-bottom: 4px; }
+        .os-sidebar .tag-header {
+            padding: 6px 14px; font-size: 12px; font-weight: 600; color: var(--os-navy);
+            cursor: pointer; display: flex; align-items: center; gap: 6px;
+            user-select: none;
+        }
+        .os-sidebar .tag-header:hover { background: var(--os-light-bg); }
+        .os-sidebar .tag-header .arrow { font-size: 10px; transition: transform 0.15s; }
+        .os-sidebar .tag-header .arrow.open { transform: rotate(90deg); }
+        .os-sidebar .tag-header .count { margin-left: auto; font-size: 10px; color: #999; font-weight: 400; }
+        .os-sidebar .op-item {
+            padding: 4px 14px 4px 28px; font-size: 11px; color: #555; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .os-sidebar .op-item:hover { background: var(--os-light-bg); color: var(--os-navy); }
+        .os-sidebar .method {
+            font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 2px;
+            min-width: 30px; text-align: center; text-transform: uppercase; flex-shrink: 0;
+        }
+        .os-sidebar .method.get { background: rgba(10,123,143,0.12); color: var(--os-teal); }
+        .os-sidebar .method.post { background: rgba(0,94,184,0.12); color: var(--os-blue); }
+        .os-sidebar .method.put { background: rgba(239,108,0,0.12); color: var(--os-orange); }
+        .os-sidebar .method.delete { background: rgba(198,40,40,0.12); color: #c62828; }
+        .os-sidebar .method.head { background: rgba(0,0,0,0.06); color: #666; }
+        .os-sidebar .method.patch { background: rgba(156,39,176,0.12); color: #7b1fa2; }
+
+        /* Main */
+        .os-main { flex: 1; overflow-y: auto; }
+        .swagger-ui .topbar { display: none; }
+        .swagger-ui .wrapper { max-width: none; padding: 0 20px; }
+        .swagger-ui .info .title { color: var(--os-navy); }
+        .swagger-ui .opblock.opblock-get .opblock-summary-method { background: var(--os-teal); }
+        .swagger-ui .opblock.opblock-get { border-color: var(--os-teal); background: rgba(10,123,143,0.03); }
+        .swagger-ui .opblock.opblock-post .opblock-summary-method { background: var(--os-blue); }
+        .swagger-ui .opblock.opblock-post { border-color: var(--os-blue); background: rgba(0,94,184,0.03); }
+        .swagger-ui .opblock.opblock-put .opblock-summary-method { background: var(--os-orange); }
+        .swagger-ui .opblock.opblock-put { border-color: var(--os-orange); background: rgba(239,108,0,0.03); }
+        .swagger-ui .opblock.opblock-delete .opblock-summary-method { background: #c62828; }
+        .swagger-ui .opblock.opblock-delete { border-color: #c62828; background: rgba(198,40,40,0.03); }
+        .swagger-ui section.models { display: none; }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script type="text/babel" data-type="module">
+    const { useState, useEffect, useRef, useMemo } = React;
+
+    function Sidebar({ spec, onOperationClick }) {
+        const [search, setSearch] = useState('');
+        const [openTags, setOpenTags] = useState({});
+
+        const tagMap = useMemo(() => {
+            if (!spec || !spec.paths) return {};
+            const map = {};
+            for (const [path, methods] of Object.entries(spec.paths)) {
+                for (const [method, op] of Object.entries(methods)) {
+                    if (typeof op !== 'object' || !op.tags) continue;
+                    for (const tag of op.tags) {
+                        if (!map[tag]) map[tag] = [];
+                        const group = op['x-operation-group'] || '';
+                        const lastSeg = group.includes('.') ? group.split('.').pop() : group;
+                        const label = lastSeg.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
+                        map[tag].push({ method, path, label, operationId: op.operationId });
+                    }
+                }
+            }
+            return map;
+        }, [spec]);
+
+        const tags = useMemo(() => Object.keys(tagMap).sort(), [tagMap]);
+
+        const filtered = useMemo(() => {
+            if (!search) return tagMap;
+            const q = search.toLowerCase();
+            const result = {};
+            for (const [tag, ops] of Object.entries(tagMap)) {
+                const matched = ops.filter(op =>
+                    op.label.toLowerCase().includes(q) ||
+                    op.path.toLowerCase().includes(q) ||
+                    tag.toLowerCase().includes(q)
+                );
+                if (matched.length > 0) result[tag] = matched;
+            }
+            return result;
+        }, [tagMap, search]);
+
+        const toggleTag = (tag) => {
+            setOpenTags(prev => ({ ...prev, [tag]: !prev[tag] }));
+        };
+
+        return (
+            <nav className="os-sidebar">
+                <input
+                    className="search-box"
+                    placeholder="Filter operations..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                />
+                <div className="nav-list">
+                    {Object.entries(filtered).sort(([a],[b]) => a.localeCompare(b)).map(([tag, ops]) => (
+                        <div className="tag-group" key={tag}>
+                            <div className="tag-header" onClick={() => toggleTag(tag)}>
+                                <span className={`arrow ${openTags[tag] || search ? 'open' : ''}`}>▶</span>
+                                {tag}
+                                <span className="count">{ops.length}</span>
+                            </div>
+                            {(openTags[tag] || search) && ops.map((op, i) => (
+                                <div className="op-item" key={i} onClick={() => onOperationClick(tag, op)}
+                                     title={`${op.method.toUpperCase()} ${op.path}`}>
+                                    <span className={`method ${op.method}`}>{op.method}</span>
+                                    <span>{op.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                </div>
+            </nav>
+        );
+    }
+
+    function App() {
+        const [spec, setSpec] = useState(null);
+        const swaggerRef = useRef(null);
+        const uiRef = useRef(null);
+
+        useEffect(() => {
+            fetch("build/opensearch-openapi.json")
+                .then(r => r.json())
+                .then(data => {
+                    setSpec(data);
+                    // Init Swagger UI
+                    uiRef.current = SwaggerUIBundle({
+                        spec: data,
+                        dom_id: "#swagger-container",
+                        deepLinking: true,
+                        presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+                        plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+                        defaultModelsExpandDepth: -1,
+                        docExpansion: "none",
+                        filter: false
+                    });
+                });
+        }, []);
+
+        const handleOperationClick = (tag, op) => {
+            // Expand the tag section and scroll to operation
+            const tagEl = document.getElementById(`operations-tag-${tag}`);
+            if (tagEl) {
+                // Click to expand tag if collapsed
+                const isCollapsed = !tagEl.nextElementSibling || tagEl.nextElementSibling.style.height === '0px';
+                if (isCollapsed) tagEl.click();
+                // Find and scroll to the specific operation
+                setTimeout(() => {
+                    const opEl = document.querySelector(
+                        `.opblock-${op.method}[id*="${op.path.replace(/[{}\/]/g, '')}"]`
+                    ) || document.getElementById(`operations-${tag}-${op.operationId}`);
+                    if (opEl) {
+                        opEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // Expand it
+                        const summary = opEl.querySelector('.opblock-summary');
+                        if (summary && !opEl.classList.contains('is-open')) summary.click();
+                    } else {
+                        // Fallback: scroll to tag
+                        tagEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }, 200);
+            }
+        };
+
+        return (
+            <div className="os-layout">
+                <header className="os-header">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="45" cy="45" r="35" fill="none" stroke="#0a7b8f" strokeWidth="8"/>
+                        <circle cx="45" cy="45" r="14" fill="#0a7b8f"/>
+                        <line x1="70" y1="70" x2="92" y2="92" stroke="#ef6c00" strokeWidth="10" strokeLinecap="round"/>
+                    </svg>
+                    <h1>OpenSearch API Specification</h1>
+                    <span className="badge">Latest</span>
+                </header>
+                <div className="os-body">
+                    <Sidebar spec={spec} onOperationClick={handleOperationClick} />
+                    <main className="os-main" ref={swaggerRef}>
+                        <div id="swagger-container"></div>
+                    </main>
+                </div>
+            </div>
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+    </script>
+</body>
+</html>

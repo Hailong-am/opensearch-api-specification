@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>OpenSearch API Reference</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            --os-navy: #003b5c;
+            --os-teal: #0a7b8f;
+            --os-blue: #005eb8;
+            --os-orange: #ef6c00;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa; min-height: 100vh;
+            display: flex; flex-direction: column;
+        }
+        header {
+            background: var(--os-navy); color: #fff; padding: 20px 32px;
+            display: flex; align-items: center; gap: 14px;
+        }
+        header svg { height: 32px; width: 32px; }
+        header h1 { font-size: 20px; font-weight: 500; }
+
+        .hero {
+            text-align: center; padding: 60px 20px 40px;
+        }
+        .hero h2 { font-size: 28px; color: var(--os-navy); margin-bottom: 12px; }
+        .hero p { font-size: 16px; color: #555; max-width: 600px; margin: 0 auto; }
+
+        .cards {
+            display: flex; gap: 24px; justify-content: center;
+            padding: 20px 32px 60px; flex-wrap: wrap;
+        }
+        .card {
+            background: #fff; border-radius: 8px; padding: 32px 28px;
+            width: 300px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            border: 2px solid transparent; cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            text-decoration: none; color: inherit;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { border-color: var(--os-teal); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        .card .icon { font-size: 36px; margin-bottom: 16px; }
+        .card h3 { font-size: 18px; color: var(--os-navy); margin-bottom: 8px; }
+        .card .subtitle { font-size: 13px; color: var(--os-teal); margin-bottom: 12px; font-weight: 500; }
+        .card p { font-size: 14px; color: #666; line-height: 1.5; flex: 1; }
+        .card .stats {
+            margin-top: 16px; padding-top: 12px; border-top: 1px solid #eee;
+            font-size: 12px; color: #999; display: flex; gap: 16px;
+        }
+        .card .stats span { display: flex; align-items: center; gap: 4px; }
+        .card .stats .dot { width: 8px; height: 8px; border-radius: 50%; }
+        .dot.green { background: #4caf50; }
+        .dot.orange { background: var(--os-orange); }
+        .dot.red { background: #c62828; }
+
+        footer {
+            margin-top: auto; padding: 20px; text-align: center;
+            font-size: 12px; color: #999;
+        }
+        footer a { color: var(--os-teal); }
+    </style>
+</head>
+<body>
+    <header>
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="45" cy="45" r="35" fill="none" stroke="#0a7b8f" stroke-width="8"/>
+            <circle cx="45" cy="45" r="14" fill="#0a7b8f"/>
+            <line x1="70" y1="70" x2="92" y2="92" stroke="#ef6c00" stroke-width="10" stroke-linecap="round"/>
+        </svg>
+        <h1>OpenSearch API Reference</h1>
+    </header>
+
+    <div class="hero">
+        <h2>Choose Your Distribution</h2>
+        <p>The OpenSearch data plane API varies by distribution. Select yours to see the operations and fields available to you.</p>
+    </div>
+
+    <div class="cards">
+        <a class="card" href="index-oss.html">
+            <div class="icon">🔓</div>
+            <h3>OpenSearch (OSS)</h3>
+            <div class="subtitle">Community Edition</div>
+            <p>The full open-source OpenSearch API. All operations available. The baseline spec from opensearch-project.</p>
+            <div class="stats">
+                <span><span class="dot green"></span> ~720 operations</span>
+                <span>OpenSearch 3.7</span>
+            </div>
+        </a>
+
+        <a class="card" href="index-aos.html">
+            <div class="icon">☁️</div>
+            <h3>Amazon OpenSearch Service</h3>
+            <div class="subtitle">Managed (AOS)</div>
+            <p>OSS operations plus UltraWarm and Cold tier APIs. Some operations blocked for security and infrastructure reasons.</p>
+            <div class="stats">
+                <span><span class="dot green"></span> 720 common</span>
+                <span><span class="dot orange"></span> +2 AOS-only</span>
+                <span><span class="dot red"></span> 100 blocked</span>
+            </div>
+        </a>
+
+        <a class="card" href="index-aoss.html">
+            <div class="icon">⚡</div>
+            <h3>Amazon OpenSearch Serverless</h3>
+            <div class="subtitle">Serverless (AOSS)</div>
+            <p>A subset of the OSS API optimized for serverless. Blocked operations are clearly marked. AOSS-specific fields highlighted.</p>
+            <div class="stats">
+                <span><span class="dot green"></span> ~670 available</span>
+                <span><span class="dot red"></span> ~150 blocked</span>
+            </div>
+        </a>
+    </div>
+
+    <footer>
+        Source: <a href="https://github.com/opensearch-project/opensearch-api-specification">opensearch-api-specification</a>
+        &middot; Spec version 3.7.0
+    </footer>
+</body>
+</html>
