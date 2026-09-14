@@ -1,38 +1,238 @@
 ---
 ---
+<!doctype html>
 <html>
-
 <head>
-    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
-    <title>OpenSearch API Spec</title>
-</head>
+    <title>OpenSearch API Reference</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <!-- Open Sans — the docs.opensearch.org body/heading typeface. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+      /* Match docs.opensearch.org typography (Just-the-Docs OpenSearch theme). */
+      .light-mode, .dark-mode {
+        --scalar-font: "Open Sans", "Segoe UI", Tahoma, sans-serif;
+        --scalar-font-code: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      }
 
+      /* OpenSearch Light Mode — docs.opensearch.org palette
+         (link #0055A6, secondary accent #00a3e0, navy #003b5c). */
+      .light-mode {
+        --scalar-color-1: #002a3a;
+        --scalar-color-2: rgba(0, 59, 92, 0.7);
+        --scalar-color-3: rgba(0, 59, 92, 0.45);
+        --scalar-color-accent: #0055a6;
+        --scalar-background-1: #ffffff;
+        --scalar-background-2: #f5f7f7;
+        --scalar-background-3: #eef1f6;
+        --scalar-background-accent: rgba(0, 85, 166, 0.08);
+        --scalar-border-color: rgba(0, 59, 92, 0.1);
+      }
+      .light-mode .sidebar {
+        --scalar-sidebar-background-1: #003b5c;
+        --scalar-sidebar-item-hover-color: #ffffff;
+        --scalar-sidebar-item-hover-background: rgba(255, 255, 255, 0.1);
+        --scalar-sidebar-item-active-background: rgba(0, 163, 224, 0.3);
+        --scalar-sidebar-border-color: rgba(255, 255, 255, 0.1);
+        --scalar-sidebar-color-1: rgba(255, 255, 255, 0.95);
+        --scalar-sidebar-color-2: rgba(255, 255, 255, 0.7);
+        --scalar-sidebar-color-active: #ffffff;
+        --scalar-sidebar-search-background: rgba(255, 255, 255, 0.1);
+        --scalar-sidebar-search-border-color: rgba(255, 255, 255, 0.15);
+        --scalar-sidebar-search-color: rgba(255, 255, 255, 0.5);
+      }
+
+      /* OpenSearch Dark Mode */
+      .dark-mode {
+        --scalar-color-1: rgba(255, 255, 255, 0.9);
+        --scalar-color-2: rgba(255, 255, 255, 0.55);
+        --scalar-color-3: rgba(255, 255, 255, 0.35);
+        --scalar-color-accent: #00a3e0;
+        --scalar-background-1: #0d1b2a;
+        --scalar-background-2: #132238;
+        --scalar-background-3: #1a2d47;
+        --scalar-background-accent: rgba(0, 163, 224, 0.1);
+        --scalar-border-color: rgba(255, 255, 255, 0.08);
+      }
+      .dark-mode .sidebar {
+        --scalar-sidebar-background-1: #091521;
+        --scalar-sidebar-item-hover-color: #ffffff;
+        --scalar-sidebar-item-hover-background: rgba(255, 255, 255, 0.05);
+        --scalar-sidebar-item-active-background: rgba(0, 163, 224, 0.15);
+        --scalar-sidebar-border-color: rgba(255, 255, 255, 0.06);
+        --scalar-sidebar-color-1: rgba(255, 255, 255, 0.85);
+        --scalar-sidebar-color-2: rgba(255, 255, 255, 0.5);
+        --scalar-sidebar-color-active: #00a3e0;
+        --scalar-sidebar-search-background: rgba(255, 255, 255, 0.06);
+        --scalar-sidebar-search-border-color: rgba(255, 255, 255, 0.08);
+        --scalar-sidebar-search-color: rgba(255, 255, 255, 0.35);
+      }
+
+      /* Hide the "OpenAPI 3.1.0" spec-format badge in the document header.
+         Scoped to the introduction section so operation method badges (also
+         .badge) are untouched. */
+      .introduction-section .section-content .flex.gap-1\.5 > .badge {
+        display: none;
+      }
+
+      /* HTTP method badge colors — docs.opensearch.org palette */
+      .light-mode {
+        --scalar-color-green: #0055a6;
+        --scalar-color-blue: #005eb8;
+        --scalar-color-orange: #ef6c00;
+        --scalar-color-red: #c62828;
+      }
+      .dark-mode {
+        --scalar-color-green: #00a3e0;
+        --scalar-color-blue: #46bde9;
+        --scalar-color-orange: #ffa040;
+        --scalar-color-red: #ef5350;
+      }
+
+      /* Sticky banner */
+      .os-banner {
+        background: #ffffff;
+        color: #003b5c;
+        padding: 8px 20px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: "Open Sans", "Segoe UI", Tahoma, sans-serif;
+        z-index: 1000;
+        position: sticky;
+        top: 0;
+        border-bottom: 1px solid rgba(0, 59, 92, 0.12);
+      }
+      .os-banner .os-logo { height: 26px; width: auto; flex-shrink: 0; }
+      .os-banner .title { font-weight: 500; color: rgba(0, 59, 92, 0.7); }
+      .os-banner .downloads { margin-left: auto; font-size: 12px; }
+      .os-banner .downloads a { color: #0055a6; text-decoration: none; }
+      .os-banner .downloads a:hover { color: #006d97; text-decoration: underline; }
+
+      /* Back to top button */
+      .back-to-top {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #003b5c;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 36px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        opacity: 0;
+        pointer-events: none;
+        transition: none;
+        z-index: 999;
+      }
+      .back-to-top.visible {
+        opacity: 0.8;
+        pointer-events: auto;
+      }
+      .back-to-top:hover {
+        opacity: 1;
+        background: #0055a6;
+      }
+    </style>
+</head>
 <body>
-    <div id="downloads" style="padding: 12px 16px; font-family: sans-serif; border-bottom: 1px solid #e0e0e0;">
-        <strong>Downloads:</strong>
+    <!-- Back to top -->
+    <button class="back-to-top" id="back-to-top" onclick="window.scrollTo(0,0)" title="Back to top">&#8593;</button>
+    <!-- Banner -->
+    <div class="os-banner">
+      <img src="https://opensearch.org/wp-content/uploads/2024/08/opensearch_logo_default.svg" alt="OpenSearch" class="os-logo" />
+      <span class="title">API Reference</span>
+      <span class="downloads">
         <a href="opensearch-openapi.yaml" download>OpenAPI Spec (YAML)</a> &middot;
         <a href="main-latest.zip" download>Spec Source (ZIP)</a> &middot;
         <a href="LICENSE.txt">License</a>
+      </span>
     </div>
-    <div id="swagger-ui"></div>
+    <!-- Scalar renders here -->
+    <div id="app"></div>
+
+    <!-- Pinned to an exact version and the standalone browser build so a future
+         breaking Scalar release cannot silently change the rendered site. -->
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.68.0/dist/browser/standalone.js"></script>
     <script>
-        window.onload = function () {
-            const ui = SwaggerUIBundle({
-                url: "opensearch-openapi.yaml",
-                dom_id: "#swagger-ui",
-                deepLinking: true,
-                presets: [
-                    SwaggerUIBundle.presets.apis,
-                    SwaggerUIBundle.SwaggerUIStandalonePreset
-                ],
-                plugins: [
-                    SwaggerUIBundle.plugins.DownloadUrl
-                ],
-            })
-            window.ui = ui
-        }
+      // Back to top visibility
+      window.addEventListener('scroll', () => {
+        document.getElementById('back-to-top').classList.toggle('visible', window.scrollY > 400);
+      });
+
+      Scalar.createApiReference('#app', {
+        url: 'https://api-spec.opensearch.org/opensearch-openapi.yaml',
+        theme: 'none',
+        layout: 'modern',
+
+        // Appearance — default to the visitor's OS preference; the toggle in
+        // the reference switches it and Scalar remembers the choice.
+        darkMode: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+        favicon: 'favicon.ico',
+
+        // Sidebar
+        showSidebar: true,
+        operationTitleSource: 'path',
+        defaultOpenFirstTag: true,
+        defaultOpenAllTags: false,
+
+        // Content display
+        hideModels: true,
+        orderSchemaPropertiesBy: 'preserve',
+
+        // Hide interactive features (read-only docs)
+        showDeveloperTools: 'never',
+        hideTestRequestButton: true,
+        hideClientButton: true,
+        agent: { disabled: true },
+        mcp: { disabled: true, name: '', url: '' },
+
+        // Download
+        hideDownloadButton: false,
+        documentDownloadType: 'both',
+
+        // Code examples: keep curl, python, java, js, go
+        searchHotKey: 'k',
+        defaultHttpClient: {
+          targetKey: 'shell',
+          clientKey: 'curl',
+        },
+        hiddenClients: {
+          c: true,
+          clojure: true,
+          csharp: true,
+          dart: true,
+          fsharp: true,
+          http: true,
+          julia: true,
+          kotlin: true,
+          objc: true,
+          ocaml: true,
+          php: true,
+          powershell: true,
+          r: true,
+          ruby: true,
+          rust: true,
+          swift: true,
+        },
+
+        // Privacy
+        telemetry: false,
+
+        metaData: {
+          title: 'OpenSearch API Reference',
+          description: 'OpenSearch REST API documentation',
+        },
+      })
     </script>
 </body>
-
 </html>

@@ -98,6 +98,7 @@ Inspired from [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 - Fix `AggregationContainer`  for all bucket aggregations so that `aggs`/`aggregations` are siblings of the aggregation type([#1069](https://github.com/opensearch-project/opensearch-api-specification/pull/1069))
 
 ### Changed
+- Replace Swagger UI with [Scalar](https://github.com/scalar/scalar) as the API playground renderer at [api-spec.opensearch.org](https://api-spec.opensearch.org/) ([#1240](https://github.com/opensearch-project/opensearch-api-specification/issues/1240))
 - Add explicit `style: simple` to 13 path parameters whose schema is an array (or `oneOf` with an array branch) so code generators no longer have to infer the OpenAPI 3 default ([#1134](https://github.com/opensearch-project/opensearch-api-specification/pull/1134))
 - Replace inline `format` query response parameter schemas across cat, list, sql, and ppl operations with typed enums (`CatResponseFormat`, `ListResponseFormat`, `SQLResponseFormat`, `PPLResponseFormat`) in `_common`, including server-truthful `default` values ([#1133](https://github.com/opensearch-project/opensearch-api-specification/pull/1133))
 - Changed schema of `NodeInfoSearchPipelines`'s `response_processors` & `request_processors` to use `NodeInfoSearchPipelineProcessor` instead of `NodeInfoIngestProcessor` ([#922](https://github.com/opensearch-project/opensearch-api-specification/pull/922))
