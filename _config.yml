@@ -2,11 +2,14 @@ source: .
 destination: ./_site
 include:
   - LICENSE.txt
+  - build  # Scalar POC render targets: build/opensearch-openapi-*-tagged.json
   - favicon.ico
   - index.html
   - main-latest.zip
+  - opensearch-openapi-*.yaml
   - opensearch-openapi.yaml
 exclude:
   - '*'
 keep_files:
+  - opensearch-openapi-*.yaml
   - opensearch-openapi.yaml

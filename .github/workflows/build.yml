@@ -27,8 +27,16 @@ jobs:
         with:
           node-version: '24'
 
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+
       - name: Build
         run: npm ci && npm run merge
+
+      - name: Install Python build dependencies
+        run: python3 -m pip install --quiet pyyaml
 
       - name: Install speakeasy overlay CLI
         env:
@@ -49,6 +57,24 @@ jobs:
         # validate-overlays workflow runs, so build and validation cannot drift.
         run: overlays/build-distribution-specs.sh
 
+      - name: Enrichment for doc rendering
+        run: |
+          for dist in oss aos aoss; do
+            if [ "$dist" = "oss" ]; then
+              src="build/opensearch-openapi.yaml"
+            else
+              src="build/opensearch-openapi-${dist}.yaml"
+            fi
+            json="build/opensearch-openapi-${dist}.json"
+            tagged="build/opensearch-openapi-${dist}-tagged.json"
+            python3 -c "import yaml,json,sys; data=yaml.safe_load(open('$src')); sys.exit('ERROR: empty/invalid YAML: $src') if not data else json.dump(data, open('$json','w'))"
+            # Drop info.version (the repo's spec version, meaningless as a badge).
+            # Per-op "Minimum version" is intentionally NOT rendered -- see the
+            # TODO in docs/remove-version.py (deferred to a Scalar plugin).
+            python3 docs/remove-version.py "$json" "$tagged"
+            python3 docs/add-client-examples.py "$tagged"
+          done
+
       - name: Stage site files
         run: |
           cp build/opensearch-openapi.yaml ./opensearch-openapi.yaml
@@ -57,6 +83,9 @@ jobs:
           for f in build/opensearch-openapi-*.yaml; do
             cp "$f" "./$(basename "$f")"
           done
+          # The Scalar POC render targets (build/opensearch-openapi-*-tagged.json,
+          # written by the Render step above) are already at ./build/ and allowlisted
+          # in _config.yml, so Jekyll copies them into _site/build/ as index.html expects.
           curl -SfL https://github.com/opensearch-project/opensearch-api-specification/archive/refs/heads/main.zip -o main-latest.zip
 
       - name: Upload Artifacts
