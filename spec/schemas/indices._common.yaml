@@ -230,7 +230,7 @@ components:
           $ref: '#/components/schemas/IngestionSourceMapperType'
         decoder_type:
           type: string
-          x-version-added: '3.8'
+          x-version-added: '3.9'
           description: |-
             The payload decoder used to deserialize ingestion messages. The built-in decoder is
             `xcontent` (JSON); plugins may register additional decoders (for example, `avro`).
